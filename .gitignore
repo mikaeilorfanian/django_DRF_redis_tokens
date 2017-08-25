@@ -1,0 +1,13 @@
+*.pyc
+*.egg-info/
+.idea/
+.tox/
+.coverage
+dist/
+
+# docs
+docs/build/
+
+# Tests
+.cache/
+htmlcov/
