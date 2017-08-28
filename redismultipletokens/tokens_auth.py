@@ -5,7 +5,7 @@ from .crypto import generate_new_hashed_token, verify_token
 from .utils import parse_full_token
 
 
-TOKENS_CACHE = caches['tokens']
+TOKENS_CACHE = caches[settings.DRF_REDIS_MULTI_TOKENS['REDIS_DB_NAME']]
 User = settings.AUTH_USER_MODEL
 
 
