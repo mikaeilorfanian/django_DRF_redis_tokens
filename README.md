@@ -20,16 +20,16 @@ CACHES = {
         }
     }
 ```
-*Note:* in the above definition, we're setting "tokens" as the name for the Redis db that will contains tokens.
+*Note:* in the above definition, we're setting "tokens" as the name for the Redis db that will contain tokens.
 ```python
 DRF_REDIS_MULTI_TOKENS = {
     'REDIS_DB_NAME': 'custom_redis_db_name_for_tokens',
 }
 ```
-Using the above config, you can specify which Redis db should be used to store your tokens.
+Using the above config you can specify which Redis db should be used to store your tokens.
 ## Set Up Token Authentication
 There's a bit of logic involved in token authentication, but `Django REST framework(DRF)` comes with a "pluggable" authentication mechanism that supports token authentication.   
-It also allows `drf-redis-tokens` to change where we it tokens. To do that, add the following to your django settings module:
+It also allows `drf-redis-tokens` to change where we it stores tokens. We want our tokens to be stored in Redis, so we have to change the default authentication class:
 ```python
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -39,9 +39,11 @@ REST_FRAMEWORK = {
         ...
     }
 ```
-*Note: `MultiToken.get_user_from_token` takes one argument. This argument must be unique to each token because it's used as a `key` in Redis. `MultiToken.get_user_from_token` returns a `User` which is defined by `settings.AUTH_USER_MODEL` if you're using a custom `User` model or Django's default `User` model.*    
+**Note**    
+DFR uses `CachedTokenAuthentication` to check if users have the right token whenever they log in. 
+*Note: `MultiToken.get_user_from_token` takes one argument. This argument must be unique to each token because it's used as a `key` in Redis. `MultiToken.get_user_from_token` returns a `User` which is defined by `settings.AUTH_USER_MODEL` if you're using a custom `User` model or Django's default `User` model.*
 ## Create New Tokens
-Whenever a user logs in, you create a new token.
+Usually, whenever a user logs in, you create a new token.
 ```python
 from drf_redis_tokens.tokens_auth import MultiToken
 
@@ -52,6 +54,7 @@ def login_handler(request):
 						                             # this is the first token created for this user
 ```
 **Notes**
-- `MultiToken.create_token` takes an instance of `settings.AUTH_USER_MODEL`.   
-- The `_` variable basically tells you whether the user is already logged in on another device.   
+- `MultiToken.create_token` takes an instance of `settings.AUTH_USER_MODEL`.
+- The `_` variable basically tells you whether the user is already logged in on another device.
+- `token` has two attributes: `key` and `user`. DRF expects custom tokens to have these attributes. `key` is the string user receives as their token and `user` is an instance of User model.
 
