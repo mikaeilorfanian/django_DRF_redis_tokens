@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.core.cache import caches
+from rest_framework import exceptions
+from rest_framework.authentication import TokenAuthentication
 
 from .crypto import generate_new_hashed_token, verify_token
 from .utils import parse_full_token
@@ -56,3 +58,17 @@ class MultiToken:
             TOKENS_CACHE.delete(h)
 
         TOKENS_CACHE.delete(user.pk)
+
+
+class CachedTokenAuthentication(TokenAuthentication):
+
+    def authenticate_credentials(self, key):
+        try:
+            user = MultiToken.get_user_from_token(key)
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('Invalid token.')
+
+        if not user.is_active:
+            raise exceptions.AuthenticationFailed('User inactive or deleted.')
+
+        return (user, MultiToken(key, user))

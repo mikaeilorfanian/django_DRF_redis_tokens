@@ -1,6 +1,6 @@
 # How to Install
 First, download the package and install it using pip.   
-Obviously, you'll need Django and Redis. Also, your Django app needs to be able to use Redis, so you'll need a library like `django-redis` or `django-redis-cache`.   
+Obviously, you'll need Django, Django REST Framework, and Redis. Also, your Django app needs to be able to use Redis, so you'll need a library like `django-redis` or `django-redis-cache`.
 Follow the instructions here(http://django-redis-cache.readthedocs.io/en/latest/intro_quick_start.html) to setup Django with Redis.   
 # How to Use It
 ## Create a Redis DB For Tokens
@@ -20,32 +20,17 @@ CACHES = {
         }
     }
 ```
-## Set Up Token Authentication
-There's a bit of logic involved in token authentication, so many frameworks come with a token authentication mechanism. For example, `Django REST framework(DRF)` comes with a "pluggable" authentication mechanism that supports token authentication.    
-You can use `django-redis-multiple-tokens` with any authentication framework that allows you to change where tokens are stored.   
-Let's modify Django REST framework's Token Authentication to make it work with `django-redis-multiple-tokens`. First, you need to enable the DRF's `TokenAuthentication` by following the instructions here(http://www.django-rest-framework.org/api-guide/authentication/). But, don't do the migrations suggested by the guide there because those migrations will use your relational database for storing tokens whereas we want to use Redis.   
-Then, you subclass the default `TokenAuthentication` class and change how it retrieves tokens:    
+*Note:* in the above definition, we're setting "tokens" as the name for the Redis db that will contains tokens.
 ```python
-from rest_framework import exceptions
-from rest_framework.authentication import TokenAuthentication
-
-
-class CachedTokenAuthentication(TokenAuthentication):
-
-    def authenticate_credentials(self, key):
-        try:
-            user = MultiToken.get_user_from_token(key)
-        except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed('Invalid token.')
-
-        if not user.is_active:
-            raise exceptions.AuthenticationFailed('User inactive or deleted.')
-
-        return (user, Token(key, user))
+DRF_REDIS_MULTI_TOKENS = {
+    'REDIS_DB_NAME': 'custom_redis_db_name_for_tokens',
+}
 ```
-Finally, you tell DRF to use the above custom authentication class instead of the default one.   
+Using the above config, you can specify which Redis db should be used to store your tokens.
+## Set Up Token Authentication
+There's a bit of logic involved in token authentication, but `Django REST framework(DRF)` comes with a "pluggable" authentication mechanism that supports token authentication.
+It also allows `drf-redis-tokens` to change where we it tokens. To do that, add the following to your django settings module:
 ```python
-# put this in your Django settings file
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'account.authentication.CachedTokenAuthentication',
