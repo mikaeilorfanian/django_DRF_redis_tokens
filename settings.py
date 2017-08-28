@@ -1,7 +1,7 @@
 from django.conf import settings
 
 DRF_REDIS_MULTI_TOKENS = {
-    'REDS_DB_NAME': 'tokens',
+    'REDIS_DB_NAME': 'tokens',
 }
 
 
