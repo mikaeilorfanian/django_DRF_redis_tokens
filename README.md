@@ -48,7 +48,6 @@ REST_FRAMEWORK = {
 ```
 **Note**    
 DFR uses `CachedTokenAuthentication` to check if users have the right token whenever they log in. 
-*Note: `MultiToken.get_user_from_token` takes one argument. This argument must be unique to each token because it's used as a `key` in Redis. `MultiToken.get_user_from_token` returns a `User` which is defined by `settings.AUTH_USER_MODEL` if you're using a custom `User` model or Django's default `User` model.*
 ## Create New Tokens
 Usually, you want to create a new token whenever a user logs in from a new device:
 ```python
@@ -89,4 +88,6 @@ When you have access to user's token, you can get the `user` associated with tha
 ```python
 MultiToken.get_user_from_token(key)
 ```
-**Note**: Then `key` here is `token.key` which is a `str` object, so `get_user_from_token` method expects a string.
+**Notes**
+- Then `key` here is `token.key` which is a `str` object, so `get_user_from_token` method expects a string.   
+- `MultiToken.get_user_from_token` returns a `User` which is defined by `settings.AUTH_USER_MODEL`.
