@@ -1,9 +1,8 @@
-import binascii
-import os
-
 from django.conf import settings
 from django.core.cache import caches
-from passlib.hash import pbkdf2_sha256
+
+from .crypto import generate_new_hashed_token, verify_token
+from .utils import parse_full_token
 
 
 TOKENS_CACHE = caches['tokens']
@@ -12,8 +11,6 @@ User = settings.AUTH_USER_MODEL
 
 class MultiToken:
 
-    TOKEN_HASH_SEPARATOR = ':hash:'
-
     def __init__(self, key, user):
         self.key = key
         self.user = user
@@ -21,9 +18,7 @@ class MultiToken:
     @classmethod
     def create(cls, user):
         created = False
-        token = binascii.hexlify(os.urandom(20)).decode()
-        hash = pbkdf2_sha256.hash(token)
-        full_token = cls._make_full_token(token, hash)
+        token, hash, full_token = generate_new_hashed_token()
         tokens = TOKENS_CACHE.get(user.pk)
 
         if not tokens:
@@ -39,15 +34,15 @@ class MultiToken:
 
     @classmethod
     def get_user_from_token(cls, full_token):
-        token, hash = cls._parse_full_token(full_token)
-        if pbkdf2_sha256.verify(token, hash):
+        token, hash = parse_full_token(full_token)
+        if verify_token(token, hash):
             return User.objects.get(pk=TOKENS_CACHE.get(hash))
         else:
             raise User.DoesNotExist
 
     @classmethod
     def expire_token(cls, full_token):
-        token, hash = cls._parse_full_token(full_token.key)
+        token, hash = parse_full_token(full_token.key)
         user_pk = TOKENS_CACHE.get(hash)
         tokens = TOKENS_CACHE.get(user_pk)
         tokens.remove(hash)
@@ -61,11 +56,3 @@ class MultiToken:
             TOKENS_CACHE.delete(h)
 
         TOKENS_CACHE.delete(user.pk)
-
-    @classmethod
-    def _make_full_token(cls, token, hash):
-        return token + cls.TOKEN_HASH_SEPARATOR + hash
-
-    @classmethod
-    def _parse_full_token(cls, full_token):
-        return full_token.split(cls.TOKEN_HASH_SEPARATOR)
