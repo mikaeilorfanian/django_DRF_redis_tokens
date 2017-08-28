@@ -55,6 +55,14 @@ class MultiToken:
         TOKENS_CACHE.delete(hash)
 
     @classmethod
+    def expire_all_tokens(cls, user):
+        hashed_tokens = TOKENS_CACHE.get(user.pk)
+        for h in hashed_tokens:
+            TOKENS_CACHE.delete(h)
+
+        TOKENS_CACHE.delete(user.pk)
+
+    @classmethod
     def _make_full_token(cls, token, hash):
         return token + cls.TOKEN_HASH_SEPARATOR + hash
 
