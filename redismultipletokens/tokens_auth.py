@@ -18,7 +18,7 @@ class MultiToken:
         self.user = user
 
     @classmethod
-    def create(cls, user):
+    def create_token(cls, user):
         created = False
         token, hash, full_token = generate_new_hashed_token()
         tokens = TOKENS_CACHE.get(user.pk)
