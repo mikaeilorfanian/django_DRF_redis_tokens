@@ -37,8 +37,9 @@ class MultiToken:
         return User.objects.get(pk=TOKENS_CACHE.get(token))
 
     @staticmethod
-    def expire(request):
-        tokens = TOKENS_CACHE.get(request.user.pk)
-        tokens.remove(request.auth.key)
-        TOKENS_CACHE.set(str(request.user.pk), tokens)
-        TOKENS_CACHE.delete(request.auth.key)
+    def expire_token(token):
+        user_pk = TOKENS_CACHE.get(token.key)
+        tokens = TOKENS_CACHE.get(user_pk)
+        tokens.remove(token.key)
+        TOKENS_CACHE.set(str(user_pk), tokens)
+        TOKENS_CACHE.delete(token.key)
