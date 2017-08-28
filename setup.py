@@ -10,7 +10,7 @@ with open('README.md', 'r') as f:
 setup(
     name='djoser',
     version='0.6.0',
-    packages=['redismultipletokens'],
+    packages=['drf_redis_tokens'],
     license='MIT',
     author='Mikaeil Orfanian',
     description='Django user auth using multiple tokens stored in Redis',
