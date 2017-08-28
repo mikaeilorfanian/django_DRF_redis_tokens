@@ -28,7 +28,7 @@ DRF_REDIS_MULTI_TOKENS = {
 ```
 Using the above config, you can specify which Redis db should be used to store your tokens.
 ## Set Up Token Authentication
-There's a bit of logic involved in token authentication, but `Django REST framework(DRF)` comes with a "pluggable" authentication mechanism that supports token authentication.
+There's a bit of logic involved in token authentication, but `Django REST framework(DRF)` comes with a "pluggable" authentication mechanism that supports token authentication.   
 It also allows `drf-redis-tokens` to change where we it tokens. To do that, add the following to your django settings module:
 ```python
 REST_FRAMEWORK = {
@@ -41,5 +41,17 @@ REST_FRAMEWORK = {
 ```
 *Note: `MultiToken.get_user_from_token` takes one argument. This argument must be unique to each token because it's used as a `key` in Redis. `MultiToken.get_user_from_token` returns a `User` which is defined by `settings.AUTH_USER_MODEL` if you're using a custom `User` model or Django's default `User` model.*    
 ## Create New Tokens
+Whenever a user logs in, you create a new token.
+```python
+from drf_redis_tokens.tokens_auth import MultiToken
 
+# create new token in your login logic
+def login_handler(request):
+    token, _ = MultiToken.create_token(request.user) # request object in DRF has a user attribute
+						                             # _ variable is a boolean that denotes whether
+						                             # this is the first token created for this user
+```
+**Notes**
+- `MultiToken.create_token` takes an instance of `settings.AUTH_USER_MODEL`.   
+- The `_` variable basically tells you whether the user is already logged in on another device.   
 
