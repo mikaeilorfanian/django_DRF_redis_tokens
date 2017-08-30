@@ -8,7 +8,7 @@ with open('README.md', 'r') as f:
 
 
 setup(
-    name='djoser',
+    name='drf-redis_tokens',
     version='0.6.0',
     packages=['drf_redis_tokens'],
     license='MIT',
