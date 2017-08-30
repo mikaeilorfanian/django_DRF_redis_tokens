@@ -40,14 +40,14 @@ It also allows `drf-redis-tokens` to change where it stores tokens. We want our 
 ```python
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
-            'account.authentication.CachedTokenAuthentication',
+            'drf_redis_tokens.tokens_auth.CachedTokenAuthentication',
         ),
         # your other DRF configurations goes below
         ...
     }
 ```
 **Note**    
-DFR uses `CachedTokenAuthentication` to check if users have the right token whenever they log in. 
+With this setting, we ask DFR to use `CachedTokenAuthentication` to check if users have the right token whenever they log in. 
 ## Create New Tokens
 Usually, you want to create a new token whenever a user logs in from a new device:
 ```python

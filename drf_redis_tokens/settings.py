@@ -1,5 +1,6 @@
 from django.conf import settings
 
+
 DRF_REDIS_MULTI_TOKENS = {
     'REDIS_DB_NAME': 'tokens',
 }

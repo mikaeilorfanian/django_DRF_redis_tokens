@@ -9,7 +9,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='drf-redis_tokens',
-    version='0.6.0',
+    version='0.1.0',
     packages=['drf_redis_tokens'],
     license='MIT',
     author='Mikaeil Orfanian',
