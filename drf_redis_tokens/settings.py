@@ -1,8 +1,11 @@
 from django.conf import settings
 
 
-DRF_REDIS_MULTI_TOKENS = {
-    'REDIS_DB_NAME': 'tokens',
+DEFAULT_DRF_REDIS_SETTINGS = {
+    'DRF_REDIS_MULTI_TOKENS':
+        {
+            'REDIS_DB_NAME': 'tokens',
+        }
 }
 
 
@@ -19,4 +22,4 @@ class DRFRedisMultipleTokensrSettings:
             return self.defaults[item]
 
 
-drf_redis_tokens_settings = DRFRedisMultipleTokensrSettings(DRF_REDIS_MULTI_TOKENS)
+drf_redis_tokens_settings = DRFRedisMultipleTokensrSettings(DEFAULT_DRF_REDIS_SETTINGS)
