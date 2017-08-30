@@ -38,7 +38,12 @@ class MultiToken:
     def get_user_from_token(cls, full_token):
         token, hash = parse_full_token(full_token)
         if verify_token(token, hash):
-            return User.objects.get(pk=TOKENS_CACHE.get(hash))
+            user = User.objects.get(pk=TOKENS_CACHE.get(hash))
+            
+            if drt_settings.RESET_TOKEN_TTL_ON_USER_LOG_IN:
+                cls.reset_tokens_ttl(user.pk)
+            
+            return user
         else:
             raise User.DoesNotExist
 
@@ -61,6 +66,23 @@ class MultiToken:
             TOKENS_CACHE.delete(h)
 
         TOKENS_CACHE.delete(user.pk)
+
+    @classmethod
+    def reset_tokens_ttl(cls, user_pk):
+        cls._reset_token_ttl(user.pk)
+
+        hashed_tokens = TOKENS_CACHE.get(user.pk)
+        for h in hashed_tokens:
+            cls._reset_token_ttl(h)
+
+
+    @classmethod
+    def _reset_token_ttl(cls, key):
+        if TOKENS_CACHE.tll(key) is None:
+            if drt_settings.OVERWRITE_NONE_TTL:
+                TOKENS_CACHE.expire(key, drt_settings.OVERWRITE_NONE_TTL)
+        else:
+            TOKENS_CACHE.expire(key, drt_settings.OVERWRITE_NONE_TTL)        
 
 
 class CachedTokenAuthentication(TokenAuthentication):

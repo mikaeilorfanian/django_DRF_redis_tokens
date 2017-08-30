@@ -5,6 +5,8 @@ DEFAULT_DRF_REDIS_SETTINGS = {
     'DRF_REDIS_MULTI_TOKENS':
         {
             'REDIS_DB_NAME': 'tokens',
+            'RESET_TOKEN_TTL_ON_USER_LOG_IN': True,
+            'OVERWRITE_NONE_TTL': True,
         }
 }
 

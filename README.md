@@ -23,17 +23,26 @@ CACHES = {
             'LOCATION': 'localhost:6379',
             'OPTIONS': {
                 'DB': 2,
-            }
+            },
+            'TIMEOUT': None,
         }
     }
 ```
-*Note:* in the above definition, we're setting "tokens" as the name for the Redis db that will contain tokens.
+**Notes**
+- In the above definition, we're setting "tokens" as the name for the Redis db that will contain tokens. You can change this, see below.
+- `TIMEOUT` is the ttl on your tokens. `None` here means that Redis will never expire your tokens. Warning: the default Django ttl is 5 minutes if you don't set `TIMEOUT` like above.
+## Custom Settings
 ```python
 DRF_REDIS_MULTI_TOKENS = {
     'REDIS_DB_NAME': 'custom_redis_db_name_for_tokens',
+    'RESET_TOKEN_TTL_ON_USER_LOG_IN': True,
+    'OVERWRITE_NONE_TTL': True,
 }
 ```
-Using the above config you can specify which Redis db should be used to store your tokens.
+Put the above config in your Django settings module to customize the behavior of `drf-redis-tokens`:    
+- `RESET_TOKEN_TTL_ON_USER_LOG_IN` extends the life of tokens by `TIMEOUT`(set above) seconds.
+- `OVERWRITE_NONE_TTL` will overwrite the previous ttl of `None`(which means Redis will never expire your token) set on a token. So, if your `TIMEOUT` is not `None` and you set `OVERWRITE_NONE_TTL` to `True` then your tokens will have a ttl.
+- If you set `OVERWRITE_NONE_TTL` to `False`, the ttl of tokens with ttl `None` will not change. They will never expire.
 ## Set Up Token Authentication
 There's complicated logic involved in token authentication, but `Django REST framework(DRF)` comes with a "pluggable" authentication system that supports token authentication.   
 It also allows `drf-redis-tokens` to change where it stores tokens. We want our tokens to be stored in Redis, so we have to change the default authentication class:
