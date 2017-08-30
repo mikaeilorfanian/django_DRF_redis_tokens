@@ -4,10 +4,11 @@ from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication
 
 from .crypto import generate_new_hashed_token, verify_token
+from .settings import drf_redis_tokens_setting as drt_settings
 from .utils import parse_full_token
 
 
-TOKENS_CACHE = caches[settings.DRF_REDIS_MULTI_TOKENS['REDIS_DB_NAME']]
+TOKENS_CACHE = caches[drt_settings.DRF_REDIS_MULTI_TOKENS['REDIS_DB_NAME']]
 User = settings.AUTH_USER_MODEL
 
 

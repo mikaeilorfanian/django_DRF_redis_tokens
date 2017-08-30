@@ -18,4 +18,4 @@ class DRFRedisMultipleTokensrSettings:
             return self.defaults[item]
 
 
-drf_reds_tokens_settings = DRFRedisMultipleTokensrSettings(DRF_REDIS_MULTI_TOKENS)
+drf_redis_tokens_settings = DRFRedisMultipleTokensrSettings(DRF_REDIS_MULTI_TOKENS)
