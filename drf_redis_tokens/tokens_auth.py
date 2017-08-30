@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.core.cache import caches
 from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication
@@ -9,7 +8,7 @@ from .utils import parse_full_token
 
 
 TOKENS_CACHE = caches[drt_settings.DRF_REDIS_MULTI_TOKENS['REDIS_DB_NAME']]
-User = settings.AUTH_USER_MODEL
+User = drt_settings.AUTH_USER_MODEL
 
 
 class MultiToken:
