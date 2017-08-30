@@ -82,6 +82,7 @@ from drf_redis_tokens.tokens_auth import MultiToken
 # user changes password and the new should be used to log in
 def password_changed_handler(user):
     MultiTOken.expire_all_token(request.user)
+    ...
 ```
 ## Get User From Token
 When you have access to user's token, you can get the `user` associated with that token:
