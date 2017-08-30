@@ -47,8 +47,11 @@ class MultiToken:
         token, hash = parse_full_token(full_token.key)
         user_pk = TOKENS_CACHE.get(hash)
         tokens = TOKENS_CACHE.get(user_pk)
-        tokens.remove(hash)
-        TOKENS_CACHE.set(str(user_pk), tokens)
+
+        if tokens and request.auth.key in tokens:
+            tokens.remove(hash)
+            TOKENS_CACHE.set(str(user_pk), tokens)
+        
         TOKENS_CACHE.delete(hash)
 
     @classmethod
