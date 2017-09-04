@@ -13,6 +13,6 @@ install:
 script:
   - cd test_app/demo
   - python manage.py migrate
-  - coverage run --source='.' manage.py test
+  - coverage run --source="$VIRTUAL_ENV/lib/python3.6/site-packages/drf_redis_tokens/" manage.py test tests/
 
 after_success: coveralls
