@@ -40,10 +40,6 @@ class MultiToken:
         token, hash = parse_full_token(full_token)
         if verify_token(token, hash):
             user = User.objects.get(pk=TOKENS_CACHE.get(hash))
-            
-            if drt_settings.RESET_TOKEN_TTL_ON_USER_LOG_IN:
-                cls.reset_tokens_ttl(user.pk)
-            
             return user
         else:
             raise User.DoesNotExist
@@ -91,6 +87,10 @@ class CachedTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         try:
             user = MultiToken.get_user_from_token(key)
+
+            if drt_settings.RESET_TOKEN_TTL_ON_USER_LOG_IN:
+                MultiToken.reset_tokens_ttl(user.pk)
+
         except User.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token.')
 
