@@ -9,3 +9,7 @@ dist/
 # Tests
 .cache/
 htmlcov/
+
+
+# django
+db.sqlite3
