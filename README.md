@@ -90,7 +90,7 @@ from drf_redis_tokens.tokens_auth import MultiToken
 
 # user changes password and the new should be used to log in
 def password_changed_handler(user):
-    MultiTOken.expire_all_token(request.user)
+    MultiToken.expire_all_tokens(request.user)
     ...
 ```
 ## Get User From Token
