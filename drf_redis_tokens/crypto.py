@@ -15,4 +15,7 @@ def generate_new_hashed_token():
 
 
 def verify_token(token, hash):
-    return pbkdf2_sha256.verify(token, hash)
+    try:
+        return pbkdf2_sha256.verify(token, hash)
+    except ValueError:
+        return False
