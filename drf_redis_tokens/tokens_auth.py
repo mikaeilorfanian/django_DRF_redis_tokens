@@ -66,9 +66,9 @@ class MultiToken:
 
     @classmethod
     def reset_tokens_ttl(cls, user_pk):
-        cls._reset_token_ttl(user.pk)
+        cls._reset_token_ttl(user_pk)
 
-        hashed_tokens = TOKENS_CACHE.get(user.pk)
+        hashed_tokens = TOKENS_CACHE.get(user_pk)
         for h in hashed_tokens:
             cls._reset_token_ttl(h)
 
