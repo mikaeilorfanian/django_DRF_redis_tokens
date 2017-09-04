@@ -7,4 +7,9 @@ def make_full_token(token, hash):
 
 
 def parse_full_token(full_token):
-    return full_token.split(TOKEN_HASH_SEPARATOR)
+    token_hash = full_token.split(TOKEN_HASH_SEPARATOR)
+    
+    if len(token_hash) != 2:
+        token_hash = ['wrong_token', 'wrong_hash']
+    
+    return token_hash
