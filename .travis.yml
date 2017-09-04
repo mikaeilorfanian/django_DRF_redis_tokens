@@ -6,11 +6,6 @@ python:
 
 services: redis
 
-before_install:
-  - export DJANGO_SETTINGS_MODULE=test_app.settings
-  - export PYTHONPATH=$HOME/builds/mikaeilorfanian/django_DRF_redis_tokens
-  - export PIP_USE_MIRRORS=true
-
 install:
   - "pip install ."
   - "pip install -r test_app/requirements"
