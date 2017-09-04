@@ -77,9 +77,9 @@ class MultiToken:
     def _reset_token_ttl(cls, key):
         if TOKENS_CACHE.ttl(key) is None:
             if drt_settings.OVERWRITE_NONE_TTL:
-                TOKENS_CACHE.expire(key, drt_settings.OVERWRITE_NONE_TTL)
+                TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)
         else:
-            TOKENS_CACHE.expire(key, drt_settings.OVERWRITE_NONE_TTL)        
+            TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)        
 
 
 class CachedTokenAuthentication(TokenAuthentication):
