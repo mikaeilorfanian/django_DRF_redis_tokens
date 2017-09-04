@@ -15,7 +15,6 @@ class DRFRedisMultipleTokensrSettings:
     def __init__(self, defaults):
         self.defaults = defaults
         self.overrides = getattr(settings, 'DRF_REDIS_MULTI_TOKENS', {})
-        self.overrides.update({'AUTH_USER_MODEL': settings.AUTH_USER_MODEL})
 
     def __getattr__(self, item):
         try:
