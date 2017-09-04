@@ -1,3 +1,5 @@
+coverage
+coveralls
 django
 djangorestframework
 django-redis-cache
