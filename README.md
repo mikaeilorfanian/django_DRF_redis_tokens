@@ -1,4 +1,4 @@
-https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens.svg?branch=master  [![Coverage Status](https://coveralls.io/repos/github/mikaeilorfanian/django_DRF_redis_tokens/badge.svg?branch=master)](https://coveralls.io/github/mikaeilorfanian/django_DRF_redis_tokens?branch=master)
+[![Build Status](https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens.svg?branch=master)](https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens)  [![Coverage Status](https://coveralls.io/repos/github/mikaeilorfanian/django_DRF_redis_tokens/badge.svg?branch=master)](https://coveralls.io/github/mikaeilorfanian/django_DRF_redis_tokens?branch=master)
 # What Does drf-redis-tokens Do?
 `drf-redis-tokens` is a plugin for DRF and Django that allows you to create multiple tokens for each user(one per device or browser) and store then in Redis.    
 Here's why you may want to use this plugin:
