@@ -1,17 +1,19 @@
-# What Is drf-redis-tokens
-`drf-redis-tokens` is a plugin for DRF and Django that allows you to create multiple tokens for each user(one per device) and store then in Redis.    
+https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens.svg?branch=master  [![Coverage Status](https://coveralls.io/repos/github/mikaeilorfanian/django_DRF_redis_tokens/badge.svg?branch=master)](https://coveralls.io/github/mikaeilorfanian/django_DRF_redis_tokens?branch=master)
+# What Does drf-redis-tokens Do?
+`drf-redis-tokens` is a plugin for DRF and Django that allows you to create multiple tokens for each user(one per device or browser) and store then in Redis.    
 Here's why you may want to use this plugin:
 - Your users have multiple devices and a log out from one device(or browser) should not log the user out on other devices(or browsers)
-- Token retrieval, validation, and updates should be fast. This plugin uses Redis so you can't go faster than that!
-- Security is important to you. This plugin encrypts users' tokens so even if an attacker gets access to all your token they would not be able to do anything with them.
+- Token retrieval, validation, and updates should be fast. This plugin uses Redis, can't touch this!
+- Security is important to you. This plugin encrypts users' tokens so even if an attacker gets access to all your tokens they would not be able to do anything with them.
 *Note: device in this document means a physical one or a browser.*
 # How to Install
 First, download the package and install it using pip.   
-Obviously, you'll need Django, Django REST Framework, and Redis. Also, your Django app needs to be able to use Redis, so you'll need a library like `django-redis` or `django-redis-cache`.
+Obviously, you'll need Django, Django REST Framework, and Redis.   
+Finally, your Django app needs to be able to talk to Redis, so you'll need a library like `django-redis` or `django-redis-cache`.
 Follow the instructions here(http://django-redis-cache.readthedocs.io/en/latest/intro_quick_start.html) to setup Django with Redis.   
 # How to Use It
 ## Create a Redis DB For Tokens
-Once you're done with the installation step, make a Redis db for your tokens by putting something like this in your Django settings file:   
+Once you're done with the installation step, make a Redis db for your tokens in your Django settings file:   
 ```python
 CACHES = {
         ...
@@ -24,13 +26,11 @@ CACHES = {
             'OPTIONS': {
                 'DB': 2,
             },
-            'TIMEOUT': None,
         }
     }
 ```
 **Notes**
-- In the above definition, we're setting "tokens" as the name for the Redis db that will contain tokens. You can change this, see below.
-- `TIMEOUT` is the ttl on your tokens. `None` here means that Redis will never expire your tokens. Warning: the default Django ttl is 5 minutes if you don't set `TIMEOUT` like above.
+- In the above definition, we're setting "tokens" as the name for the Redis db that will contain tokens. You can change this name, more on that later.
 ## Custom Settings
 ```python
 DRF_REDIS_MULTI_TOKENS = {
