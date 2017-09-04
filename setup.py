@@ -13,7 +13,7 @@ setup(
     packages=['drf_redis_tokens'],
     license='MIT',
     author='Mikaeil Orfanian',
-    description='Django user auth using multiple tokens stored in Redis',
+    description='Django REST Framework user auth using multiple tokens stored in Redis',
     author_email='mokt@outlook.com',
     long_description=readme,
     install_requires=['passlib', 'djangorestframework'],
