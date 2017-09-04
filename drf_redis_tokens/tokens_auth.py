@@ -50,7 +50,7 @@ class MultiToken:
         user_pk = TOKENS_CACHE.get(hash)
         tokens = TOKENS_CACHE.get(user_pk)
 
-        if tokens and request.auth.key in tokens:
+        if tokens and hash in tokens:
             tokens.remove(hash)
             TOKENS_CACHE.set(str(user_pk), tokens)
         
