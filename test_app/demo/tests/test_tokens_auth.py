@@ -53,3 +53,26 @@ class TestCreateToken(TestCase):
         self.assertIn(second_hash, TOKENS_CACHE.get(self.user.pk))
         self.assertIsNotNone(TOKENS_CACHE.get(first_hash))
         self.assertIsNotNone(TOKENS_CACHE.get(second_hash))
+
+
+class TestGetUserFromTokenMethod(TestCase):
+
+    def setUp(self):
+        TOKENS_CACHE.clear()
+        self.user = create_test_user()
+        self.token, self.first_device = MultiToken.create_token(self.user)
+
+    def tearDown(self):
+        # cleanup Redis after tests
+        TOKENS_CACHE.clear()
+
+    def test_correct_user_is_found_for_correct_token(self):
+        user = MultiToken.get_user_from_token(self.token.key)
+        self.assertEqual(user.pk, self.user.pk)
+
+    def test_exception_is_raised_for_wrong_token(self):
+        wrong_token = self.token.key[:-1]
+        self.assertRaises(User.DoesNotExist, MultiToken.get_user_from_token, wrong_token)
+
+        wrong_token = self.token.key[1:]
+        self.assertRaises(User.DoesNotExist, MultiToken.get_user_from_token, wrong_token)
