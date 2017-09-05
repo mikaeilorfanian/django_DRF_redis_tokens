@@ -1,14 +1,18 @@
 [![Build Status](https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens.svg?branch=master)](https://travis-ci.org/mikaeilorfanian/django_DRF_redis_tokens)  [![Coverage Status](https://coveralls.io/repos/github/mikaeilorfanian/django_DRF_redis_tokens/badge.svg?branch=master)](https://coveralls.io/github/mikaeilorfanian/django_DRF_redis_tokens?branch=master)
 # What Does drf-redis-tokens Do?
-`drf-redis-tokens` is a plugin for DRF and Django that allows you to create multiple tokens for each user(one per device or browser) and store then in Redis.    
+`drf-redis-tokens` is a plugin for DRF and Django that allows you to create multiple tokens for each user(one per device or browser) and store them in Redis.    
 Here's why you may want to use this plugin:
 - Your users have multiple devices and a log out from one device(or browser) should not log the user out on other devices(or browsers)
 - Token retrieval, validation, and updates should be fast. This plugin uses Redis, can't touch this!
-- Security is important to you. This plugin encrypts users' tokens so even if an attacker gets access to all your tokens they would not be able to do anything with them.
+- Security is important to you. This plugin encrypts users' tokens so even if an attacker gets access to all your tokens they would not be able to do anything with them.   
+
+
+
 *Note: device in this document means a physical one or a browser.*
 # How to Install
 First, download the package and install it using pip.   
-Obviously, you'll need Django, Django REST Framework, and Redis.   
+`pip install git+https://github.com/mikaeilorfanian/django_DRF_redis_tokens/`    
+Then, you'll need Django, Django REST Framework, and Redis.   
 Finally, your Django app needs to be able to talk to Redis, so you'll need a library like `django-redis` or `django-redis-cache`.
 Follow the instructions here(http://django-redis-cache.readthedocs.io/en/latest/intro_quick_start.html) to setup Django with Redis.   
 # How to Use It
