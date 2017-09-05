@@ -1,23 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .utils import create_test_user
+from .utils import create_test_user, SetupTearDownForMultiTokenTests
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
 
 
 User = get_user_model()
 
 
-class TestCreateToken(TestCase):
-
-    def setUp(self):
-        TOKENS_CACHE.clear()
-        self.user = create_test_user()
-        self.token, self.first_device = MultiToken.create_token(self.user)
-
-    def tearDown(self):
-        # cleanup Redis after tests
-        TOKENS_CACHE.clear()
+class TestCreateToken(SetupTearDownForMultiTokenTests, TestCase):
 
     def test_new_token_has_attributes_required_by_DRF(self):
         self.assertTrue(hasattr(self.token, 'key'))
@@ -55,16 +46,7 @@ class TestCreateToken(TestCase):
         self.assertIsNotNone(TOKENS_CACHE.get(second_hash))
 
 
-class TestGetUserFromTokenMethod(TestCase):
-
-    def setUp(self):
-        TOKENS_CACHE.clear()
-        self.user = create_test_user()
-        self.token, self.first_device = MultiToken.create_token(self.user)
-
-    def tearDown(self):
-        # cleanup Redis after tests
-        TOKENS_CACHE.clear()
+class TestGetUserFromTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
 
     def test_correct_user_is_found_for_correct_token(self):
         user = MultiToken.get_user_from_token(self.token.key)
