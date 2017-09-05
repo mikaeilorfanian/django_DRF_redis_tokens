@@ -15,4 +15,6 @@ script:
   - python manage.py migrate
   - coverage run --source="$VIRTUAL_ENV/lib/python3.6/site-packages/drf_redis_tokens/" manage.py test tests/
 
-after_success: coveralls
+after_success:
+  - coverage report
+  - coveralls
