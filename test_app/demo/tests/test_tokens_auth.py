@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .utils import SetupTearDownForMultiTokenTests
+from .utils import create_test_user, SetupTearDownForMultiTokenTests
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
 from drf_redis_tokens.utils import parse_full_token
 
@@ -78,4 +78,41 @@ class TestExpireTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
         self.assertIsNone(TOKENS_CACHE.get(hash))
 
         self.assertEqual(TOKENS_CACHE.get(self.user.pk)[0], parse_full_token(second_token.key)[1])
+        self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))
+
+    def test_other_users_tokens_are_not_affected(self):
+        second_user = create_test_user('tester2')
+        second_token, _ = MultiToken.create_token(second_user)
+        MultiToken.expire_token(self.token)
+
+        self.assertIsNotNone(TOKENS_CACHE.get(second_user.pk))
+        self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))
+
+
+
+class TestExpireAllTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
+
+    def test_all_tokens_from_user_are_removed_when_user_has_only_one_token(self):
+        self.assertIsNone(MultiToken.expire_token(self.token))
+        self.assertEqual(len(TOKENS_CACHE.get(self.user.pk)), 0)
+        _, hash = parse_full_token(self.token.key)
+        self.assertIsNone(TOKENS_CACHE.get(hash))
+
+    def test_all_tokens_from_user_are_removed_when_user_has_multiple_tokens(self):
+        second_token, first_device = MultiToken.create_token(self.user)
+        MultiToken.expire_token(self.token)
+
+        self.assertEqual(len(TOKENS_CACHE.get(self.user.pk)), 1)
+        _, hash = parse_full_token(self.token.key)
+        self.assertIsNone(TOKENS_CACHE.get(hash))
+
+        self.assertEqual(TOKENS_CACHE.get(self.user.pk)[0], parse_full_token(second_token.key)[1])
+        self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))
+
+    def test_other_users_are_not_affected(self):
+        second_user = create_test_user('tester2')
+        second_token, _ = MultiToken.create_token(second_user)
+        MultiToken.expire_all_tokens(self.user)
+
+        self.assertIsNotNone(TOKENS_CACHE.get(second_user.pk))
         self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))

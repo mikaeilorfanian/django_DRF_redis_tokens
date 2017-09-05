@@ -6,8 +6,8 @@ from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
 User = get_user_model()
 
 
-def create_test_user():
-    return User.objects.create_user(username='tester')
+def create_test_user(username='tester'):
+    return User.objects.create_user(username=username)
 
 
 class SetupTearDownForMultiTokenTests:
