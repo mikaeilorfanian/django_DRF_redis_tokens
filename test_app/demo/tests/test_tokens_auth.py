@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from .utils import SetupTearDownForMultiTokenTests
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
+from drf_redis_tokens.utils import parse_full_token
 
 
 User = get_user_model()
@@ -58,3 +59,23 @@ class TestGetUserFromTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
 
         wrong_token = self.token.key[1:]
         self.assertRaises(User.DoesNotExist, MultiToken.get_user_from_token, wrong_token)
+
+
+class TestExpireTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
+
+    def test_token_is_removed_from_redis_when_user_has_only_one_token(self):
+        self.assertIsNone(MultiToken.expire_token(self.token))
+        self.assertEqual(len(TOKENS_CACHE.get(self.user.pk)), 0)
+        _, hash = parse_full_token(self.token.key)
+        self.assertIsNone(TOKENS_CACHE.get(hash))
+
+    def test_token_is_removed_from_redis_when_user_has_multiple_tokens(self):
+        second_token, first_device = MultiToken.create_token(self.user)
+        MultiToken.expire_token(self.token)
+
+        self.assertEqual(len(TOKENS_CACHE.get(self.user.pk)), 1)
+        _, hash = parse_full_token(self.token.key)
+        self.assertIsNone(TOKENS_CACHE.get(hash))
+
+        self.assertEqual(TOKENS_CACHE.get(self.user.pk)[0], parse_full_token(second_token.key)[1])
+        self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))
