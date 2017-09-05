@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
+from drf_redis_tokens.settings import drf_redis_tokens_settings as drf_settings
 
 
 User = get_user_model()
@@ -20,3 +21,19 @@ class SetupTearDownForMultiTokenTests:
     def tearDown(self):
         # cleanup Redis after tests
         TOKENS_CACHE.clear()
+
+
+class MockedSettings:
+
+    def __init__(self, timeout=False):
+        if timeout is False:
+            self.CACHES = {
+                drf_settings.REDIS_DB_NAME: {
+                }
+            }
+        else:
+            self.CACHES = {
+                drf_settings.REDIS_DB_NAME: {
+                    'TIMEOUT': timeout
+                }
+            }
