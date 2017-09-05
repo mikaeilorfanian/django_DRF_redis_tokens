@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .utils import create_test_user, SetupTearDownForMultiTokenTests
+from .utils import SetupTearDownForMultiTokenTests
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
 
 
