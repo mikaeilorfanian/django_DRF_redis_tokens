@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.cache import caches
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions
@@ -30,8 +31,8 @@ class MultiToken:
         else:
             tokens.append(hash)
 
-        TOKENS_CACHE.set(str(user.pk), tokens)
-        TOKENS_CACHE.set(hash, str(user.pk))
+        cls._set_value_in_cache(str(user.pk), tokens)
+        cls._set_value_in_cache(hash, str(user.pk))
 
         return MultiToken(full_token, user), created
 
@@ -52,8 +53,8 @@ class MultiToken:
 
         if tokens and hash in tokens:
             tokens.remove(hash)
-            TOKENS_CACHE.set(str(user_pk), tokens)
-        
+            cls._set_value_in_cache(str(user_pk), tokens)
+
         TOKENS_CACHE.delete(hash)
 
     @classmethod
@@ -79,7 +80,14 @@ class MultiToken:
             if drt_settings.OVERWRITE_NONE_TTL:
                 TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)
         else:
-            TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)        
+            TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)
+
+    @classmethod
+    def _set_value_in_cache(cls, key, value):
+        if 'TIMEOUT' in settings.CACHES[drt_settings.REDIS_DB_NAME]:
+            TOKENS_CACHE.set(key, value)
+        else:
+            TOKENS_CACHE.set(key, value, timeout=drt_settings.TOKEN_TTL_IN_SEDONDS)
 
 
 class CachedTokenAuthentication(TokenAuthentication):
