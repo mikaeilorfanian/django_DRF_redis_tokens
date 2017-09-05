@@ -132,7 +132,7 @@ CACHES = {
 DRF_REDIS_MULTI_TOKENS = {
     'REDIS_DB_NAME': 'custom_redis_db_name_for_tokens',
     'RESET_TOKEN_TTL_ON_USER_LOG_IN': True,
-    'OVERWRITE_NONE_TTL': True,
+    'OVERWRITE_NONE_TTL': False,
     'TOKEN_TTL_IN_SEDONDS': 1200000,
 }
 ```
