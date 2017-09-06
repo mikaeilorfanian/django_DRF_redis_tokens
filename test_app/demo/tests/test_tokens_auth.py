@@ -4,7 +4,12 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .utils import create_test_user, MockedSettings, SetupTearDownForMultiTokenTests
+from .utils import (
+    create_test_user,
+    MockedLibrarySettings,
+    MockedSettings,
+    SetupTearDownForMultiTokenTests,
+)
 from drf_redis_tokens.tokens_auth import MultiToken, TOKENS_CACHE
 from drf_redis_tokens.utils import parse_full_token
 
@@ -121,7 +126,7 @@ class TestExpireAllTokenMethod(SetupTearDownForMultiTokenTests, TestCase):
         self.assertIsNotNone(TOKENS_CACHE.get(parse_full_token(second_token.key)[1]))
 
 
-class TestSetValueInCacheMethod(TestCase):
+class TestSetValueInCacheMethod(SetupTearDownForMultiTokenTests, TestCase):
 
     @patch('drf_redis_tokens.tokens_auth.settings', new=MockedSettings(timeout=None))
     def test_default_timeout_for_cache_db_is_used_when_it_is_provided(self):
@@ -132,5 +137,41 @@ class TestSetValueInCacheMethod(TestCase):
     def test_token_ttl_settings_of_drf_redis_tokens_settings_is_used_when_redis_db_timeout_argument_is_not_given(self):
         MultiToken._set_value_in_cache('key', 'value')
         self.assertIsNotNone(TOKENS_CACHE.ttl('key'))
-        self.assertAlmostEquals(TOKENS_CACHE.ttl('key'), settings.DRF_REDIS_MULTI_TOKENS['TOKEN_TTL_IN_SEDONDS'])
+        self.assertAlmostEquals(TOKENS_CACHE.ttl('key'), settings.DRF_REDIS_MULTI_TOKENS['TOKEN_TTL_IN_SECONDS'])
 
+
+class TestResetTokensTTLMethod(SetupTearDownForMultiTokenTests, TestCase):
+
+    @patch('drf_redis_tokens.tokens_auth.settings', new=MockedSettings(timeout=None))
+    def test_users_immortal_tokens_get_limited_ttl_when_OVERWRITE_NONE_TTL_setting_is_True(self):
+        MultiToken.reset_tokens_ttl(self.user.pk)
+        self.assertIsNotNone(TOKENS_CACHE.ttl(self.user.pk))
+        hash = TOKENS_CACHE.get(self.user.pk)[0]
+        self.assertIsNotNone(TOKENS_CACHE.ttl(hash))
+
+    @patch('drf_redis_tokens.tokens_auth.settings', new=MockedSettings(timeout=None))
+    @patch('drf_redis_tokens.tokens_auth.drt_settings', new=MockedLibrarySettings(overwrite_ttl=False))
+    def test_users_immortal_tokens_stay_immortal_when_OVERWRITE_NONE_TTL_setting_is_False(self):
+        hash = TOKENS_CACHE.get(self.user.pk)[0]
+        MultiToken.reset_tokens_ttl(self.user.pk)
+
+        self.assertIsNone(TOKENS_CACHE.ttl(self.user.pk))
+        self.assertIsNone(TOKENS_CACHE.ttl(hash))
+
+    def test_other_users_tokens_are_not_affected(self):
+        second_user = create_test_user('tester2')
+        second_token, _ = MultiToken.create_token(second_user)
+        MultiToken.reset_tokens_ttl(self.user.pk)
+
+        self.assertIsNotNone(TOKENS_CACHE.ttl(self.user.pk))
+        self.assertIsNone(TOKENS_CACHE.ttl(second_user.pk))
+        hash = TOKENS_CACHE.get(second_user.pk)[0]
+        self.assertIsNone(TOKENS_CACHE.ttl(hash))
+
+    @patch('drf_redis_tokens.tokens_auth.drt_settings', new=MockedLibrarySettings(ttl_in_seconds=1000))
+    def test_correct_ttl_is_set_for_renewed_tokens(self):
+        hash = TOKENS_CACHE.get(self.user.pk)[0]
+        MultiToken.reset_tokens_ttl(self.user.pk)
+
+        self.assertAlmostEquals(TOKENS_CACHE.ttl(self.user.pk), 1000)
+        self.assertAlmostEquals(TOKENS_CACHE.ttl(hash), 1000)
