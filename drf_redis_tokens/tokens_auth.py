@@ -78,16 +78,16 @@ class MultiToken:
     def _reset_token_ttl(cls, key):
         if TOKENS_CACHE.ttl(key) is None:
             if drt_settings.OVERWRITE_NONE_TTL:
-                TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)
+                TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SECONDS)
         else:
-            TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SEDONDS)
+            TOKENS_CACHE.expire(key, drt_settings.TOKEN_TTL_IN_SECONDS)
 
     @classmethod
     def _set_value_in_cache(cls, key, value):
         if 'TIMEOUT' in settings.CACHES[drt_settings.REDIS_DB_NAME]:
             TOKENS_CACHE.set(key, value)
         else:
-            TOKENS_CACHE.set(key, value, timeout=drt_settings.TOKEN_TTL_IN_SEDONDS)
+            TOKENS_CACHE.set(key, value, timeout=drt_settings.TOKEN_TTL_IN_SECONDS)
 
 
 class CachedTokenAuthentication(TokenAuthentication):

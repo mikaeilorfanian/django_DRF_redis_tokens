@@ -7,7 +7,7 @@ DEFAULT_DRF_REDIS_SETTINGS = {
             'REDIS_DB_NAME': 'tokens',
             'RESET_TOKEN_TTL_ON_USER_LOG_IN': True,
             'OVERWRITE_NONE_TTL': True,
-            'TOKEN_TTL_IN_SEDONDS': 1200000,
+            'TOKEN_TTL_IN_SECONDS': 1200000,
         }
 }
 
